@@ -1,23 +1,12 @@
 # Projet Final — Clusteurisation de conteneurs
 
-> Concevoir, déployer et opérer une application microservices sur Kubernetes (CI/CD, observabilité, HA)
-
-## Architecture
-
-```
-frontend  ──►  backend/catalogue  ──►  PostgreSQL
-          ──►  backend/orders     ──►  PostgreSQL
-```
-
-Exposition via **Ingress** (NGINX) dans un namespace dédié.
-
 ## Prérequis
 
 - kubectl ≥ 1.28
 - helm ≥ 3.x
 - Docker + accès registry (GHCR ou Docker Hub)
 - Cluster Kubernetes accessible (Minikube, k3s, GKE…)
-- `metrics-server` installé (pour HPA)
+- metrics-server installé (pour HPA)
 
 ## Déploiement rapide
 
@@ -68,14 +57,6 @@ kubectl apply -f k8s/hpa/
 └── README.md
 ```
 
-## Membres de l'équipe
-
-| Membre | Rôle principal |
-|--------|---------------|
-| ...    | Frontend / DevOps |
-| ...    | Backend (catalogue + orders) |
-| ...    | Kubernetes / CI/CD / Observabilité |
-
 ## Choix techniques
 
 - **Runtime** : Node.js (backends) + Nginx (frontend)
@@ -83,8 +64,3 @@ kubectl apply -f k8s/hpa/
 - **Ingress** : NGINX Ingress Controller
 - **Monitoring** : Prometheus + Grafana
 - **CI/CD** : GitHub Actions → GHCR → kubectl apply
-
-## Liens utiles
-
-- [Architecture détaillée](docs/architecture.md)
-- [Runbook](docs/runbook.md)
