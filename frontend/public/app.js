@@ -69,12 +69,15 @@ document.getElementById('order-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ productId: parseInt(productId), quantity }),
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
 
     status.textContent = 'Commande passée avec succès !';
     status.className = 'success';
     document.getElementById('order-form').reset();
-    await loadOrders();
+    await Promise.all([loadProducts(), loadOrders()]);
   } catch (err) {
     log('error', `submitOrder: ${err.message}`);
     status.textContent = `Erreur : ${err.message}`;

@@ -55,14 +55,37 @@ app.post('/orders', async (req, res) => {
     return res.status(400).json({ error: 'productId and quantity (>=1) are required' });
   }
 
-  const result = await query(
-    'INSERT INTO orders (product_id, quantity) VALUES ($1, $2) RETURNING *',
-    [productId, quantity]
-  );
+  if (pool) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
 
-  if (result) {
-    log('info', `POST /orders — created order id=${result.rows[0].id}`);
-    return res.status(201).json(result.rows[0]);
+      const stock = await client.query('SELECT stock FROM products WHERE id=$1 FOR UPDATE', [productId]);
+      if (stock.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ error: 'product not found' });
+      }
+      if (stock.rows[0].stock < quantity) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ error: 'stock insuffisant' });
+      }
+
+      await client.query('UPDATE products SET stock = stock - $1 WHERE id=$2', [quantity, productId]);
+      const result = await client.query(
+        'INSERT INTO orders (product_id, quantity) VALUES ($1, $2) RETURNING *',
+        [productId, quantity]
+      );
+      await client.query('COMMIT');
+
+      log('info', `POST /orders — created order id=${result.rows[0].id}`);
+      return res.status(201).json(result.rows[0]);
+    } catch (err) {
+      await client.query('ROLLBACK');
+      log('error', `POST /orders transaction failed: ${err.message}`);
+      return res.status(500).json({ error: err.message });
+    } finally {
+      client.release();
+    }
   }
 
   const order = { id: Date.now(), product_id: productId, quantity, created_at: new Date() };
