@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shop
+      POSTGRES_DB: shopdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop -d shopdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  catalogue:
+    build: ./backend/catalogue
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: shopdb
+      DB_USER: shop
+      DB_PASSWORD: shop
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  orders:
+    build: ./backend/orders
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: "3001"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: shopdb
+      DB_USER: shop
+      DB_PASSWORD: shop
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - catalogue
+      - orders
+
+volumes:
+  postgres_data:
