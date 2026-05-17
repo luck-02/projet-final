@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microservices Shop</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f4f6f9; color: #222; }
+    header { background: #1e293b; color: #fff; padding: 1rem 2rem; }
+    header h1 { font-size: 1.4rem; }
+    main { max-width: 960px; margin: 2rem auto; padding: 0 1rem; display: grid; gap: 2rem; }
+    section { background: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    h2 { margin-bottom: 1rem; font-size: 1.1rem; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: .5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th { background: #f1f5f9; text-align: left; padding: .5rem .75rem; }
+    td { padding: .5rem .75rem; border-bottom: 1px solid #e2e8f0; }
+    tr:last-child td { border-bottom: none; }
+    form { display: grid; gap: .75rem; max-width: 400px; }
+    label { font-size: .85rem; font-weight: 600; color: #475569; }
+    select, input { width: 100%; padding: .5rem .75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: .9rem; }
+    button { background: #1e293b; color: #fff; border: none; padding: .6rem 1.25rem; border-radius: 6px; cursor: pointer; font-size: .9rem; width: fit-content; }
+    button:hover { background: #334155; }
+    #order-status { font-size: .85rem; }
+    #order-status.success { color: #166534; }
+    #order-status.error { color: #dc2626; }
+    #orders-list { list-style: none; display: grid; gap: .5rem; }
+    #orders-list li { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: .6rem 1rem; font-size: .85rem; }
+    .muted { color: #94a3b8; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <header><h1>Microservices Shop</h1></header>
+  <main>
+    <section>
+      <h2>Catalogue produits</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Nom</th><th>Prix (€)</th><th>Stock</th></tr></thead>
+        <tbody id="products-body"><tr><td colspan="4" class="muted">Chargement…</td></tr></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Passer une commande</h2>
+      <form id="order-form">
+        <div>
+          <label for="product-select">Produit</label>
+          <select id="product-select" required><option value="">-- choisir --</option></select>
+        </div>
+        <div>
+          <label for="quantity">Quantité</label>
+          <input type="number" id="quantity" min="1" value="1" required />
+        </div>
+        <button type="submit">Commander</button>
+        <p id="order-status"></p>
+      </form>
+    </section>
+
+    <section>
+      <h2>Commandes passées</h2>
+      <ul id="orders-list"><li class="muted">Chargement…</li></ul>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
